@@ -1,0 +1,62 @@
+CREATE TABLE Pedidos (
+    idPedido INT AUTO_INCREMENT,
+    idItem INT,
+    quantidadeComprada INT,
+    valorTotal DECIMAL(9, 2),
+    dataPedido DATE,
+    PRIMARY KEY (idPedido)
+);
+
+INSERT INTO
+    Pedidos (
+        idItem,
+        quantidadeComprada,
+        valorTotal,
+        dataPedido
+    )
+VALUES
+    (2, 12, 5.20, '2023-11-10'),
+    (2, 20, 5.20, '2023-06-15'),
+    (1, 5, 7.50, '2023-08-01');
+
+SELECT * FROM Pedidos;
+
+SELECT*FROM itens_estoque
+WHERE preco_venda_item = (
+SELECT preco_venda_item
+FROM itens_estoque 
+where preco_venda_item = 7.50
+);
+
+SELECT*FROM itens_estoque
+WHERE preco_venda_item <> (
+SELECT MAX(preco_venda_item)
+FROM itens_estoque
+);
+
+SELECT * FROM itens_estoque
+WHERE setor_item = (
+    SELECT setor_item 
+    FROM itens_estoque
+    WHERE setor_item IN ('bebidas')
+);
+
+SELECT descricao_item
+FROM itens_estoque
+WHERE id_item IN (
+SELECT id_item
+FROM itens_estoque
+WHERE id_item > 2
+);
+
+SELECT I.descricao_item,
+(
+SELECT SUM(P.quantidadeComprada * P.valorTotal)
+FROM Pedidos AS P
+WHERE P.idItem = I.idItem
+)
+AS Total_Comprado
+FROM itens_estoque AS I;
+
+SELECT SUM(quantidadeComprada * valorTotal)
+FROM Pedidos;
