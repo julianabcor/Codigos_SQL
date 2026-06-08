@@ -1,0 +1,226 @@
+-- ATIVIDADES SUBQUERYS
+
+-- Básicas
+
+-- 01
+SELECT nome, idade
+FROM Alunos
+WHERE idade = (
+    SELECT MAX(idade) 
+    FROM Alunos);
+
+-- 02
+SELECT nome, idade
+FROM Alunos 
+WHERE idade < (
+    SELECT AVG(idade) 
+    FROM Alunos);
+
+-- 03
+SELECT nome_curso, carga_horaria
+FROM Cursos 
+WHERE carga_horaria = (
+    SELECT MAX(carga_horaria) 
+    FROM Cursos);
+
+-- 04
+SELECT a.nome, m.nota
+FROM Alunos AS a
+JOIN Matriculas m ON a.id_aluno = m.id_aluno
+WHERE m.nota = (
+    SELECT MAX(nota) 
+    FROM Matriculas);
+
+-- 05
+SELECT a.nome, m.nota
+FROM Alunos AS a 
+JOIN Matriculas m ON a.id_aluno = m.id_aluno
+WHERE nota > (
+    SELECT AVG(nota) 
+    FROM Matriculas);
+
+-- 06
+SELECT nome_curso, carga_horaria
+FROM Cursos
+WHERE carga_horaria > (
+    SELECT AVG(carga_horaria) 
+    FROM Cursos);
+
+-- 07
+SELECT nome, idade
+FROM Alunos
+WHERE idade = (
+    SELECT MIN(idade) 
+    FROM Alunos);
+
+-- 08
+SELECT id_matricula, id_aluno, faltas
+FROM Matriculas
+WHERE faltas > (
+    SELECT AVG(faltas) 
+    FROM Matriculas);
+
+-- 09
+SELECT nome_curso, carga_horaria
+FROM Cursos
+WHERE carga_horaria <> (
+    SELECT MAX(carga_horaria) 
+    FROM Cursos);
+
+-- 10
+SELECT a.nome, m.nota
+FROM Alunos AS a
+JOIN Matriculas AS m ON a.id_aluno = m.id_aluno
+WHERE m.nota = (
+    SELECT MIN(nota) 
+    FROM Matriculas);
+
+
+
+-- Intermediárias
+
+
+-- 01
+SELECT nome 
+FROM Alunos 
+WHERE id_aluno IN (
+    SELECT id_aluno 
+    FROM Matriculas);
+
+-- 02
+SELECT nome_curso 
+FROM Cursos 
+WHERE id_curso IN (
+    SELECT id_curso 
+    FROM Matriculas);
+
+-- 03
+SELECT nome 
+FROM Alunos 
+WHERE id_aluno IN (
+    SELECT id_aluno 
+    FROM Matriculas 
+    WHERE id_curso IN (
+        SELECT id_curso 
+        FROM Cursos 
+        WHERE nome_curso = 'Python')
+);
+
+-- 04
+SELECT nome
+FROM Alunos
+WHERE id_aluno IN(
+    SELECT id_aluno
+    FROM Matriculas
+    WHERE id_curso IN (
+        SELECT id_curso 
+        FROM Cursos 
+        WHERE carga_horaria = '60'));
+
+-- 05
+SELECT nome_curso 
+FROM Cursos 
+WHERE id_curso IN (
+    SELECT id_curso 
+    FROM Matriculas 
+    WHERE nota > 8);
+
+-- 06
+SELECT nome 
+FROM Alunos 
+WHERE id_aluno IN (
+    SELECT id_aluno 
+    FROM Matriculas 
+    GROUP BY id_aluno
+    HAVING COUNT(id_matricula) > 1
+)
+GROUP BY nome;
+
+-- 07
+SELECT nome_curso 
+FROM Cursos 
+WHERE id_curso NOT IN (
+    SELECT id_curso 
+    FROM Matriculas);
+
+-- 08
+SELECT nome 
+FROM Alunos 
+WHERE id_aluno IN (
+    SELECT id_aluno 
+    FROM Matriculas 
+    GROUP BY id_aluno
+    HAVING SUM(faltas) > 5);
+
+-- 09
+SELECT nome_curso 
+FROM Cursos 
+WHERE id_curso IN (
+    SELECT id_curso 
+    FROM Matriculas 
+    WHERE id_aluno IN (
+        SELECT id_aluno 
+        FROM Alunos 
+        WHERE cidade = 'Curitiba')
+);
+
+-- 10
+SELECT nome 
+FROM Alunos 
+WHERE id_aluno IN (
+    SELECT id_aluno 
+    FROM Matriculas 
+    WHERE id_curso IN (
+        SELECT id_curso 
+        FROM Cursos 
+        WHERE carga_horaria = (
+            SELECT MAX(carga_horaria) 
+            FROM Cursos))
+);
+
+
+
+-- Avançadas
+
+
+-- 01
+SELECT nome, idade
+FROM Alunos
+WHERE idade > (
+    SELECT AVG(idade) 
+    FROM Alunos 
+    WHERE cidade = 'São Paulo');
+
+-- 02
+SELECT c.nome_curso
+FROM Cursos AS c
+JOIN Matriculas AS m ON c.id_curso = m.id_curso
+GROUP BY c.id_curso, c.nome_curso
+HAVING AVG(m.nota) > (
+    SELECT AVG(nota) 
+    FROM Matriculas);
+
+-- 03
+SELECT a.nome
+FROM Alunos AS a
+JOIN Matriculas AS m ON a.id_aluno = m.id_aluno
+GROUP BY a.id_aluno, a.nome
+HAVING SUM(m.faltas) > (
+    SELECT AVG(faltas) 
+    FROM Matriculas);
+
+-- 04
+SELECT c.nome_curso
+FROM Cursos AS c
+JOIN Matriculas AS m ON c.id_curso = m.id_curso
+GROUP BY c.id_curso, c.nome_curso
+HAVING MAX(m.nota) = (
+    SELECT MAX(nota) 
+    FROM Matriculas);
+
+-- 05
+SELECT a.nome
+FROM Alunos AS a
+JOIN Matriculas AS m ON a.id_aluno = m.id_aluno
+GROUP BY a.id_aluno, a.nome
+HAVING AVG(m.nota) < (SELECT AVG(nota) FROM Matriculas);
