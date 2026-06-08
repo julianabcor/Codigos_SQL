@@ -1,0 +1,10 @@
+CREATE DATABASE acervo_livros;
+USE acervo_livros;
+
+CREATE TABLE Livro ( 
+    titulo VARCHAR(80) NOT NULL,
+    lancamento INT, 
+    idioma VARCHAR(20), 
+    isbn INT PRIMARY KEY AUTO_INCREMENT, 
+    capa VARCHAR(30)
+    );
